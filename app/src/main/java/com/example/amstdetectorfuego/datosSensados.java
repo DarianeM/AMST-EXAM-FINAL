@@ -12,6 +12,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class datosSensados extends AppCompatActivity {
 
     DatabaseReference db_reference;
@@ -41,18 +45,30 @@ public class datosSensados extends AppCompatActivity {
     }
 
     public void mostrarRegistrosPorPantalla(DataSnapshot snapshot){
-        LinearLayout contTemp = (LinearLayout) findViewById(R.id.ContenedorTemp);
-        LinearLayout contHum = (LinearLayout) findViewById(R.id.ContenedorHum);
+        LinearLayout contFecha = (LinearLayout) findViewById(R.id.ContenedorFecha);
+        LinearLayout contIntensidad = (LinearLayout) findViewById(R.id.ContenedorIntensidad);
+        LinearLayout contAlarma = (LinearLayout) findViewById(R.id.ContenedorAlarma);
 
-        String tempVal = String.valueOf(snapshot.child("uplink_message").child("decoded_payload").child("temperatura").getValue());
-        String humVal = String.valueOf(snapshot.child("uplink_message").child("decoded_payload").child("humedad").getValue());
+        String intensidadVal = String.valueOf(snapshot.child("uplink_message").child("decoded_payload").child("intensidad").getValue());
+        String alarmaVal = String.valueOf(snapshot.child("uplink_message").child("decoded_payload").child("alarma").getValue());
+        String dateTime = ZonedDateTime.now(ZoneId.of("-05:00")).format(DateTimeFormatter.ofPattern("MMM dd yyyy, hh:mm:ss a"));
 
-        TextView temp = new TextView(getApplicationContext());
-        temp.setText(tempVal+" °C");
-        contTemp.addView(temp);
+        if(alarmaVal=="1"){
+            alarmaVal = "Fuego";
+        } else {
+            alarmaVal = "";
+        }
 
-        TextView hum = new TextView(getApplicationContext());
-        hum.setText(humVal+" %");
-        contHum.addView(hum);
+        TextView intensidad = new TextView(getApplicationContext());
+        intensidad.setText(intensidadVal);
+        contIntensidad.addView(intensidad);
+
+        TextView fecha = new TextView(getApplicationContext());
+        fecha.setText(dateTime);
+        contFecha.addView(fecha);
+
+        TextView alarma = new TextView(getApplicationContext());
+        alarma.setText(alarmaVal);
+        contAlarma.addView(alarma);
     }
 }

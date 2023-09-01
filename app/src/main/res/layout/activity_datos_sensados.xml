@@ -43,16 +43,40 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="#635D5D"
-                android:text="Valor"
+                android:text="Intensidad"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="#635D5D"
+                android:text="Alarma"
                 android:textColor="#FFFFFF"
                 android:textStyle="bold"/>
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/cont_alertas"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical" >
+            android:orientation="horizontal">
+            <LinearLayout
+                android:id="@+id/ContenedorFecha"
+                android:layout_width="211dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical"/>
+            <LinearLayout
+                android:id="@+id/ContenedorIntensidad"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical" />
+            <LinearLayout
+                android:id="@+id/ContenedorAlarma"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

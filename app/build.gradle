@@ -41,6 +41,9 @@ dependencies {
     //Para el menu flotante
     implementation 'com.getbase:floatingactionbutton:1.10.1'
 
+    //Para grafico de barras
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+
     // Import the Firebase BoM
     implementation platform('com.google.firebase:firebase-bom:32.1.0')
 
