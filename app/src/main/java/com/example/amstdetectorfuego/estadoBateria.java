@@ -2,57 +2,86 @@ package com.example.amstdetectorfuego;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.LinearLayout;
 
-import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.utils.ColorTemplate;
-
-import java.util.ArrayList;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class estadoBateria extends AppCompatActivity {
 
-    private Integer total=100,consumido=25, valNoConsumo;
+    DatabaseReference db_reference;
+
+    LinearLayout linearLayoutbatteryCont;
+    LinearLayout linearLayoutbatteryLoad;
+
+    int high = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_estado_bateria);
+
+        linearLayoutbatteryCont = findViewById(R.id.idBatteryCont);
+        linearLayoutbatteryLoad = findViewById(R.id.idBatteryLoad);
+
+        high = 1000;
+        Log.d("TAG", "Altura: " + high);
+
+        db_reference = FirebaseDatabase.getInstance().getReference().child("data");
+
+        loadData();
     }
+    void loadData(){
+        db_reference
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Iterable<DataSnapshot> children = dataSnapshot.getChildren();
 
-    public void consumoActual(){
-        PieChart pieCharts = findViewById(R.id.pieChart);
+                        // Declarar una variable para almacenar el último hijo
+                        DataSnapshot lastChild = null;
 
-        //total -> valEstimadoPorMes
-        //real -> valConsumo
-        //restante -> valNoConsumo
+                        // Iterar a través de los hijos para encontrar el último
+                        for (DataSnapshot child : children) {
+                            lastChild = child;
+                        }
 
-        valNoConsumo = total - consumido;
+                        // Aquí puedes usar lastChild para acceder al último hijo
+                        if (lastChild != null) {
+                            // Por ejemplo, para obtener el valor del último hijo:
+                            String bateria = lastChild.child("bateria").getValue().toString();
+
+                            Log.d("TAG", "Valor de bateria: " + bateria); // Verifica el valor de bateria
+
+                            float numBateria = Float.parseFloat(bateria);
+
+                            float highLoad = (float) (high * (numBateria / 100.0));
+
+                            Log.d("TAG", "Valor de highLoad: " + highLoad); // Verifica el valor de highLoad
 
 
-        ArrayList<PieEntry> v = new ArrayList<>();
-        v.add(new PieEntry(consumido,""));
-        v.add(new PieEntry(valNoConsumo,""));
+                            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) linearLayoutbatteryLoad.getLayoutParams();
 
-        PieDataSet pieDataSet = new PieDataSet(v,"valores");
-        pieDataSet.setColors(ColorTemplate.LIBERTY_COLORS);
+                            int alturaRedondeada = Math.round(highLoad);
 
-        PieData pieData = new PieData(pieDataSet);
+                            Log.d("TAG", "Altura redondeada: " + alturaRedondeada); // Verifica la altura redondeada
 
-        pieCharts.setData(pieData);
-        pieCharts.setCenterText(consumido.toString() + " %");
-        pieCharts.setUsePercentValues(true);
-        pieCharts.setCenterTextSize(30f);
-        pieCharts.setCenterTextTypeface(Typeface.create(Typeface.MONOSPACE, Typeface.BOLD));
-        pieCharts.setCenterTextColor(Color.DKGRAY);
-        pieCharts.getData().setDrawValues(false);
-        pieCharts.getLegend().setEnabled(false);
-        pieCharts.getDescription().setEnabled(false);
-        pieCharts.setTransparentCircleColor(Color.WHITE);
-        pieCharts.setRotationEnabled(false);
+                            params.height = alturaRedondeada;
+
+                            linearLayoutbatteryLoad.setLayoutParams(params);
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError error) {
+                        System.out.println(error.toException());
+                    }
+                });
     }
 }
